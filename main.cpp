@@ -17,6 +17,8 @@ class Container{
 };
 
 int readinFile();
+void containersToBeLoaded();
+void containersToBeUnloaded();
 
 
 
@@ -25,14 +27,17 @@ int readinFile();
 int main()
 {
     std::cout << "started\n";
-    readinFile();
+    //readinFile();
+    containersToBeLoaded();
+    containersToBeUnloaded();
     std::cout << "done\n";
-    long long count = 0;
+    /*long long count = 0;
 
     for (long long i = 0; i < 10000000000; i++) {
     count = i;
     }
     std::cout << count;
+    */
     //Read in the ship contents
 
 
@@ -106,5 +111,44 @@ int readinFile(){
     //STILL WANT TO ADD OTHER ROWS TO THE SHIP
     return 2;
     
+
+}
+
+void containersToBeLoaded()
+{
+    std::ifstream inFile;
+    std::string filename = "onloadTest.txt";
+    inFile.open(filename);
+    std::vector<Container>Onload;
+    std::string tempString = "";
+    while(std::getline(inFile,tempString))
+    {
+        Container tempContainer;
+        tempContainer.x = 0;
+        tempContainer.y = 0;
+        tempContainer.contents = tempString.substr(9);
+        //std::cout <<  tempContainer.contents << "\n";
+        Onload.push_back(tempContainer);
+    }
+
+}
+void containersToBeUnloaded()
+{
+    std::ifstream inFile;
+    std::string filename = "unloadTest.txt";
+    inFile.open(filename);
+    std::vector<Container>Unload;
+    std::string tempString = "";
+    while(std::getline(inFile,tempString))
+    {
+        Container tempContainer;
+        tempContainer.x = std::stoi(tempString.substr(1,2));
+        tempContainer.y = std::stoi(tempString.substr(4,2));
+        tempContainer.contents = tempString.substr(18);
+        std::cout <<  tempContainer.x << "\n";
+        std::cout <<  tempContainer.y << "\n";
+        std::cout <<  tempContainer.contents << "\n";
+        Unload.push_back(tempContainer);
+    }
 
 }
