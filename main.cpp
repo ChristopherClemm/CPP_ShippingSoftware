@@ -10,27 +10,29 @@ class Container{
         int x;
         int y;
         int weight;
+        std::string stringWeight;
         bool accessable;
         bool isContanier;
         bool toBeRemoved; 
 
 };
 
-int readinFile();
+std::vector<std::vector<Container>> readinFile();
 void containersToBeLoaded();
 void containersToBeUnloaded();
-
-
+void extendBoard();
+void printShip(std::vector<std::vector<Container>>);
 
 
 
 int main()
 {
     std::cout << "started\n";
-    //readinFile();
+    std::vector<std::vector<Container>>ship = readinFile();
     containersToBeLoaded();
     containersToBeUnloaded();
     std::cout << "done\n";
+    printShip(ship);
     /*long long count = 0;
 
     for (long long i = 0; i < 10000000000; i++) {
@@ -57,7 +59,7 @@ int main()
 
 
 
-int readinFile(){
+std::vector<std::vector<Container>> readinFile(){
 
     std::ifstream inFile;
     std::string filename = "test.txt";
@@ -82,7 +84,7 @@ int readinFile(){
             }
             else
             {
-                tempContainer.accessable = false;
+                tempContainer.accessable = true;
                 if (tempContainer.contents == "UNUSED")
                 {
                     tempContainer.isContanier = false;
@@ -94,6 +96,7 @@ int readinFile(){
                 }
             }
             //std::cout <<  tempString.substr(10,5) << "\n";
+            tempContainer.stringWeight = tempString.substr(10,5);
             tempContainer.weight = std::stoi(tempString.substr(10,5));
             //std::cout <<  tempContainer.weight << "\n";
             
@@ -109,7 +112,7 @@ int readinFile(){
     std::cout << ship.size() << std::endl;
     std::cout << ship[0].size() << std::endl;
     //STILL WANT TO ADD OTHER ROWS TO THE SHIP
-    return 2;
+    return ship;
     
 
 }
@@ -126,6 +129,7 @@ void containersToBeLoaded()
         Container tempContainer;
         tempContainer.x = 0;
         tempContainer.y = 0;
+        //still need to set weights
         tempContainer.contents = tempString.substr(9);
         //std::cout <<  tempContainer.contents << "\n";
         Onload.push_back(tempContainer);
@@ -149,6 +153,40 @@ void containersToBeUnloaded()
         std::cout <<  tempContainer.y << "\n";
         std::cout <<  tempContainer.contents << "\n";
         Unload.push_back(tempContainer);
+    }
+
+}
+
+void extendBoard()
+{
+    //This function allows us to utilize the pink area above the ship and the buffer area on the shipyard
+
+
+}
+
+void printShip(std::vector<std::vector<Container>>ship)
+{
+    //This allows us to visualize the current state of the ship
+
+    for( int i = 7; i >= 0; i--)
+    {
+        for (int j = 0; j < 12; j++)
+        {
+            if(!ship[i][j].accessable )
+            {
+                std::cout << "NANNN" << " ";
+            }
+            else if (!ship[i][j].isContanier)
+            {
+                std::cout << "     " << " ";
+            }
+            else
+            {
+                std::cout << ship[i][j].stringWeight << " ";
+            }
+            
+        }
+        std::cout << "\n";
     }
 
 }
