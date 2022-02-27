@@ -302,6 +302,7 @@ int findPath(int x1, int y1, int x2, int y2,  std::vector<std::vector<Container>
     
     int cost = 0;
     std::priority_queue<Node*, std::vector<Node*>, myComparator>pqPath;
+
     Node* currNode = new Node();
     //currNode->currShip = ship;
     currNode->cost = 0;
