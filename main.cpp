@@ -62,6 +62,7 @@ void swapContainers( std::vector<std::vector<Container>>&, int, int, int, int);
 void updateQueueBalance(std::priority_queue<Node*, std::vector<Node*>, myComparator>& , Node * ,std::vector<int>&, std::vector<int>&,  std::unordered_set<std::string>&);
 int isBalanced(std::vector<std::vector<Container>>& , std::vector<int>, std::vector<int>);
 std::string stringify(std::vector<std::vector<Container>>&);
+void printInstructions(Node * );
 
 
 
@@ -325,7 +326,7 @@ void balance(std::vector<std::vector<Container>>ship)
     //left.push_back(10000);
     left.push_back(2011);
     left.push_back(2007);
-    left.push_back(100);
+    //left.push_back(100);
     left.push_back(2000);
 
     std::sort(left.begin(), left.end());
@@ -352,7 +353,7 @@ void balance(std::vector<std::vector<Container>>ship)
     //std::unordered_set<std::vector<std::vector<Container>>,hashFunctionNode>myUOSetBalance;
     std::unordered_set<std::string> myUOSetBalance;
     std::string myString = stringify(currNode->currShip);
-    std::cout<<"MY STRING : " << myString << "\n";
+    //std::cout<<"MY STRING : " << myString << "\n";
     myUOSetBalance.insert(myString);
     //hashFunctionNode
     /*
@@ -379,7 +380,9 @@ void balance(std::vector<std::vector<Container>>ship)
 
         if(currNode->balance == 0)
         {
-             std::cout << "SOLUTION FOUND!" << "\n";
+            //printShip(currNode->currShip);
+            //std::cout << "this is not balance  = " << isBalanced(currNode->currShip,left, right ) << "\n\n\n\n";
+            std::cout << "SOLUTION FOUND!" << "\n";
             break;
         }
         updateQueueBalance(pqBalance, currNode, left, right, myUOSetBalance);
@@ -387,15 +390,13 @@ void balance(std::vector<std::vector<Container>>ship)
 
         nodesExpanded++;
         //std::cout << "NODES EXPANDED: " << nodesExpanded << "\n";
-        if(pqBalance.size() >= 30000)
-        {
-            break;
-        }
+        
         //std::cout << "pqBalance.size() = " << pqBalance.size() <<  "\n";
         //i--;
     }
     printShip(currNode->currShip);
-    std::cout << "cost?  " << currNode->cost << "\n";
+    printInstructions(currNode);
+    std::cout << "cost?  " << currNode->depth << "\n";
 
     std::cout << "NODES EXPANDED: " << nodesExpanded << "\n";
    
@@ -711,7 +712,37 @@ int isBalanced(std::vector<std::vector<Container>>& ship, std::vector<int>left, 
 }
 
 
+void printInstructions(Node * currNode)
+{
+    std::vector<int>left;
+    left.push_back(3044);
+    //left.push_back(1100);
+    left.push_back(2020);
+    //left.push_back(10000);
+    left.push_back(2011);
+    left.push_back(2007);
+    //left.push_back(100);
+    left.push_back(2000);
 
+    std::sort(left.begin(), left.end());
+    std::vector<int>right;
+    right.push_back(1100);
+    right.push_back(10000);
+    //std::cout << "this is not balance  = " << isBalanced(currNode->currShip,left, right ) << "\n\n\n\n";
+    std::vector<std::string>myVec;
+    while(currNode != NULL)
+    {
+        myVec.push_back(currNode->instructions);
+        //std::cout << currNode->instructions << "\n";
+        //printShip(currNode->currShip);
+        currNode = currNode->prev;
+    }
+    for(int i = myVec.size(); i >= 0; i--)
+    {
+        std::cout << myVec[i];
+    }
+    
+}
 void updateQueueBalance(std::priority_queue<Node*, std::vector<Node*>, myComparator>& pqBalance, Node * currNode, std::vector<int>&left, std::vector<int>&right, std::unordered_set<std::string>& myUOSetBalance)
 {
     //std::cout << "GETTING CONTAINERS\n";
@@ -750,8 +781,11 @@ void updateQueueBalance(std::priority_queue<Node*, std::vector<Node*>, myCompara
             if (currContianerPair.second != currEmptyPair.second)
             {
                 int cost = costToGetToContainer + findPath(currContianerPair.first, currContianerPair.second, currEmptyPair.first, currEmptyPair.second, ship);
-                int balance = isBalanced(ship,left,right);
+                
                 Node* newNode = new Node();
+                newNode->instructions = "Move from Crane (" + std::to_string(craneX) + ", " +  std::to_string(craneY)  + ") to (" +  std::to_string(currContianerPair.first) + " , " 
+                +  std::to_string(currContianerPair.second)+ ") \nMove ("+  std::to_string(currContianerPair.first) + " , "+  std::to_string(currContianerPair.second)+ ") to ("
+                 +  std::to_string(currEmptyPair.first) + " , " +  std::to_string(currEmptyPair.second) + ") \n weight = " + std::to_string(ship[currContianerPair.first][currContianerPair.second].weight) + "cost = "  + std::to_string(cost) + "\n\n";
                 newNode->prev = currNode;
                 //leftNode->currX = x;
                 //leftNode->currY = y;  
@@ -760,10 +794,16 @@ void updateQueueBalance(std::priority_queue<Node*, std::vector<Node*>, myCompara
                 std::string tempString = stringify(newNode->currShip);
                 if (myUOSetBalance.find(tempString)  == myUOSetBalance.end() )
                 {
+                    int balance = isBalanced(newNode->currShip,left,right);
+                    if(balance == 0)
+                    {
+                        //std::cout << "RIGHT HEREEEE\n";
+                        //printShip(newNode->currShip);
+                    }
                     newNode->craneX = currEmptyPair.first;
                     newNode->craneY = currEmptyPair.second;
                     newNode->balance = balance;
-                    newNode->depth = currNode->depth+1;
+                    newNode->depth = currNode->depth + cost;
                     newNode->cost = currNode->depth + 1+ balance + cost;
                     //std::cout<< myPair.first << ", " << myPair.second << "\n";            
                     myUOSetBalance.insert(tempString);

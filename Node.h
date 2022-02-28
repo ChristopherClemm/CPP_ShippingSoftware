@@ -19,6 +19,7 @@ class Node{
         int craneX;
         int craneY;
         int balance = 100;
+        std::string instructions;
 
         //std::vector<int> vec;
         //Node(std::vector<int>& ship);
