@@ -16,6 +16,10 @@ class Node{
         int currX;
         int currY;
         int depth;
+        int craneX;
+        int craneY;
+        int balance = 100;
+
         //std::vector<int> vec;
         //Node(std::vector<int>& ship);
         //Node(std::vector<std::vector<Container>>);
