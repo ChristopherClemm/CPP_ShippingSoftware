@@ -16,9 +16,9 @@
 class myComparator
 {
 public:
-    int operator() (const Node* n1, const Node* n2)
+    int operator() (const Node n1, const Node n2)
     {
-        return n1->cost > n2->cost;
+        return n1.cost > n2.cost;
     }
 };
 
@@ -52,14 +52,14 @@ void containersToBeUnloaded();
 void extendBoard();
 void printShip(std::vector<std::vector<Container>>);
 void balance(std::vector<std::vector<Container>>);
-void updateQueue(std::priority_queue<Node*, std::vector<Node*>, myComparator>&, Node *, int , int, std::vector<std::vector<Container>>&, std::unordered_set<std::pair<int,int>,hashFunctionPair>&);
+void updateQueue(std::priority_queue<Node, std::vector<Node>, myComparator>&, Node , int , int, std::vector<std::vector<Container>>&, std::unordered_set<std::pair<int,int>,hashFunctionPair>&);
 int findPath(int, int, int, int,  std::vector<std::vector<Container>> );
 int mannhatanDistancePath(int, int, int, int);
 void printPath(Node *);
 std::vector<std::pair<int,int>> findContianersToMove(std::vector<std::vector<Container>>);
 std::vector<std::pair<int,int>> findOpenPlaces(std::vector<std::vector<Container>>);
 void swapContainers( std::vector<std::vector<Container>>&, int, int, int, int);
-void updateQueueBalance(std::priority_queue<Node*, std::vector<Node*>, myComparator>& , Node * ,std::vector<int>&, std::vector<int>&,  std::unordered_set<std::string>&);
+void updateQueueBalance(std::priority_queue<Node, std::vector<Node>, myComparator>& , Node  ,std::vector<int>&, std::vector<int>&,  std::unordered_set<std::string>&);
 int isBalanced(std::vector<std::vector<Container>>& , std::vector<int>, std::vector<int>);
 std::string stringify(std::vector<std::vector<Container>>&);
 void printInstructions(Node * );
@@ -75,6 +75,27 @@ int main()
     //std::cout << "done\n";
     printShip(ship);
     balance(ship);
+    int i = 0;
+    //_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    /*
+    while(i < 1000000)
+    {
+        //std::cout <<"hi\n";
+        findPath( 1,  0,  2,  1, ship);
+         //std::cout << findPath( 8,  0,  1,  1, ship) << "\n";
+         //std::cout << findPath( 8,  0,  1,  1, ship) << "\n";
+         //std::cout << findPath( 8,  0,  1,  1, ship) << "\n";
+         //std::cout << i << "  hi\n";
+         i++;
+       
+    }
+    std::cout << "done\n";
+    */
+    
+    while(1){
+
+    }
+    
     //std::cout << ship.size() << "\n";
     //std::cout << ship[0].size() << "\n";
     //std::cout << findPath( 8,  0,  1,  1, ship) << "\n";
@@ -94,6 +115,7 @@ int main()
     //balance(ship);
     //std::cout << mannhatanDistancePath(1,1,6,6);
     //create global ship view
+    
     return 0;
 
 
@@ -303,22 +325,19 @@ void balance(std::vector<std::vector<Container>>ship)
     
     //misplaced tiles
     
-    Node* currNode = new Node();
-    currNode->currShip = ship;
-    currNode->cost = 0;
-    currNode->craneX = 8;
-    currNode->craneY = 0;
+    Node currNode;
+    currNode.currShip = ship;
+    currNode.cost = 0;
+    currNode.craneX = 8;
+    currNode.craneY = 0;
+    currNode.depth = 0;
+    currNode.emptyCrane = true;
+    currNode.instructions = "";
     //Node* prev = *t;
     //printShip(currNode->currShip);
     //  
-    std::priority_queue<Node*, std::vector<Node*>, myComparator>pqBalance;
-    //pqBalance.push(currNode);
-    //Node* currNode1 = new Node();
-    //currNode1->currShip = ship;
-    //currNode1->cost = 100;
-    //pq.push(currNode1);
-    //Node* p = pq.top();
-    //std::cout << p->cost << "\n";
+    std::priority_queue<Node, std::vector<Node>, myComparator>pqBalance;
+
     std::vector<int>left;
     left.push_back(3044);
     //left.push_back(1100);
@@ -333,42 +352,18 @@ void balance(std::vector<std::vector<Container>>ship)
     std::vector<int>right;
     right.push_back(1100);
     right.push_back(10000);
-    currNode->balance = isBalanced(currNode->currShip, left, right);
-    /*std::cout << "THE CURR NODE IS " << currNode->balance << "\n";
-    swapContainers(ship,7 , 4, 1, 1);
-    printShip(ship);
-    std::cout << "THE CURR NODE IS " << isBalanced(ship, left, right) << "\n";
-    swapContainers(ship,6 , 4, 1, 7);
-    printShip(ship);
-    std::cout << "THE CURR NODE IS " << isBalanced(ship, left, right) << "\n";
-    swapContainers(ship,5 , 4, 2, 1);
-    printShip(ship);
-    std::cout << "THE CURR NODE IS " << isBalanced(ship, left, right) << "\n";
-    swapContainers(ship,4 , 4, 2, 7);
-    printShip(ship);
-    std::cout << "THE CURR NODE IS " << isBalanced(ship, left, right) << "\n";
-    */
-
+    currNode.balance = isBalanced(currNode.currShip, left, right);
     pqBalance.push(currNode);
-    //std::unordered_set<std::vector<std::vector<Container>>,hashFunctionNode>myUOSetBalance;
     std::unordered_set<std::string> myUOSetBalance;
-    std::string myString = stringify(currNode->currShip);
-    //std::cout<<"MY STRING : " << myString << "\n";
+    std::string myString = stringify(currNode.currShip);
     myUOSetBalance.insert(myString);
-    //hashFunctionNode
-    /*
-    std::unordered_set<std::pair<int,int>,hashFunctionPair>myUOSet;
-    std::pair<int, int>myPair = std::make_pair(x1,y1);
-    myUOSet.insert(myPair);
-
-    */
-   
+    
     long long nodesExpanded = 0;
     int i = 19;
     //printShip(ship);
     while (pqBalance.size() != 0)
     {
-        
+        //break;
         //std::cout << "HERE " << "\n";
         
         //if it is the goal state return true;
@@ -378,25 +373,58 @@ void balance(std::vector<std::vector<Container>>ship)
         //printShip(currNode->currShip);
         //std::cout << "THE CURR NODE IS " << currNode->balance << "\n";
 
-        if(currNode->balance == 0)
+        if(currNode.balance == 0)
         {
             //printShip(currNode->currShip);
             //std::cout << "this is not balance  = " << isBalanced(currNode->currShip,left, right ) << "\n\n\n\n";
+
             std::cout << "SOLUTION FOUND!" << "\n";
             break;
         }
+        //std::cout << "SOLUTION FOUND!" << "\n";
         updateQueueBalance(pqBalance, currNode, left, right, myUOSetBalance);
+
+        //delete currNode;
         //std::cout << "HERE" << "\n";
 
         nodesExpanded++;
         //std::cout << "NODES EXPANDED: " << nodesExpanded << "\n";
+        if(nodesExpanded % 5000 == 0)
+        {
+            std::cout << "NODES EXPANDED: " << nodesExpanded << "\n";
+            std::cout << "pqBalance.size() = " << pqBalance.size() <<  "\n";
+            printShip(currNode.currShip);
+
+            //std::cout << "DEPTH \n\n" << currNode->depth << "\n\n\n";
+            //printInstructions(currNode);
+        }
+        
         
         //std::cout << "pqBalance.size() = " << pqBalance.size() <<  "\n";
         //i--;
     }
-    printShip(currNode->currShip);
-    printInstructions(currNode);
-    std::cout << "cost?  " << currNode->depth << "\n";
+    printShip(currNode.currShip);
+    std::cout<< currNode.instructions; 
+    std::cout << "cost?  " << currNode.depth << "\n";
+    //int h = 0;
+    //std::cout << "h = " << h << "\n";
+    /*Node * temp = new Node();
+    //Node * temp2 = new Node();
+    temp = currNode;
+    int h = 0;
+    while(pqBalance.size() > 0)
+    {
+        temp = pqBalance.top();
+        pqBalance.pop();
+        delete temp;
+        //std::cout << "pqBalance.size() = " << pqBalance.size() <<  "\n";
+        //std::cout << "h = " << h << "\n";
+        h++;
+    }
+    std::cout << "pqBalance.size() = " << pqBalance.size() <<  "\n";
+    delete currNode;
+    */
+
 
     std::cout << "NODES EXPANDED: " << nodesExpanded << "\n";
    
@@ -416,49 +444,122 @@ int findPath(int x1, int y1, int x2, int y2,  std::vector<std::vector<Container>
 {
     
     int cost = 0;
-    std::priority_queue<Node*, std::vector<Node*>, myComparator>pqPath;
-
-    Node* currNode = new Node();
+    std::priority_queue<Node, std::vector<Node>, myComparator>pqPath;
+    //std::cout <<"findPath Called\n";
+    Node currNode;
     //currNode->currShip = ship;
-    currNode->cost = 0;
+    //delete currNode;
+    //return 1;
+    currNode.cost = 0;
     int nodesExpanded = 0;
-    currNode->currX = x1;
-    currNode->currY = y1;
-    currNode->depth = 0;
+    currNode.currX = x1;
+    currNode.currY = y1;
+    currNode.depth = 0;
     pqPath.push(currNode);
     int currDepth = 0;
     std::unordered_set<std::pair<int,int>,hashFunctionPair>myUOSet;
     std::pair<int, int>myPair = std::make_pair(x1,y1);
+    //delete currNode;
     myUOSet.insert(myPair);
-
+    //delete currNode;
+    //return 1;
     //mySet.insert(currNode);
+    /*for(int i = 0; i < 1000; i++)
+    {
+        Node * hi = new Node();
+        hi->currShip = ship;
+        hi->cost = i;
+        pqPath.push(hi);
+    }
+
+    Node * temp = new Node();
+    while(pqPath.size() > 0)
+    {
+        temp = pqPath.top();
+        pqPath.pop();
+        delete temp;
+        //std::cout << "pqBalance.size() = " << pqBalance.size() <<  "\n";
+        //std::cout << "h = " << h << "\n";
+    }
+    
+    currNode = new Node;
+    currNode->cost = 0;
+    //int nodesExpanded = 0;
+    currNode->currX = x1;
+    currNode->currY = y1;
+    currNode->depth = 0;
+    pqPath.push(currNode);
+    */
+    //currNode->currShip = ship;
+    int finalCost = 0;
+    int delete1 = 0;
+
     while(pqPath.size() != 0)
     {
+    
         currNode = pqPath.top();
         pqPath.pop();
         nodesExpanded++;
-        if(currNode->currX == x2 && currNode->currY == y2)
+        if(currNode.currX == x2 && currNode.currY == y2)
         {
             //std::cout << "Solution Found\n";
+            finalCost = currNode.cost;
+            //std::cout << "finalCost = " << finalCost << "\n";
+            //delete currNode;
             break;
         }
 
         //need to create seen hash for less repeated states
         updateQueue(pqPath, currNode, x2, y2, ship, myUOSet);
+        //std::cout << "size of pqPath" << pqPath.size() << "\n";
+        delete1++;
+        //delete currNode;
         //currDepth++;
         //std::cout << nodesExpanded << "\n";
 
 
 
     }
+    //std::cout << "deleted = " << delete1 << "\n";
+    //std::cout << "size of pqPath" << pqPath.size() << "\n";
     //std::cout << nodesExpanded << "\n";
     //printPath(currNode);
     //std::cout << "size of ship 1 axis " << ship.size() << "\n";
     //std::cout << "size of ship 2 axis " << ship[0].size() << "\n";
     //std::cout << "size of myUO " << myUOSet.size() << "\n";
     //std::cout << "max size of myUO " << myUOSet.max_size() << "\n";
+    //int finalCost = currNode->cost;
+   
+    /*Node * temp = new Node();
+    //Node * temp2 = new Node();
+    //temp = currNode;
+    int h = 0;
+    while(pqPath.size() > 0)
+    {
+        delete1++;
+        temp = pqPath.top();
+        pqPath.pop();
+        delete temp;
+        //std::cout << "pqBalance.size() = " << pqBalance.size() <<  "\n";
+        std::cout << "h = " << h << "\n";
+        h++;
+    }
+    //std::cout << "here\n"; 
+    std::cout << "pqBalance.size() = " << pqPath.size() <<  "\n";
+    */
+    //delete temp2;
+    //delete temp;
+    
+    //delete currNode;
+    
+    //delete currNode;
+    //delete1++;
+    //std::cout << "deleted = " << delete1 << "\n";
 
-    return currNode->cost;
+    
+    return finalCost;
+
+    //return finalCost;
 
     
 
@@ -466,27 +567,29 @@ int findPath(int x1, int y1, int x2, int y2,  std::vector<std::vector<Container>
      
 }
 
-void updateQueue(std::priority_queue<Node*, std::vector<Node*>, myComparator>& pq, Node * currNode, int x2, int y2, std::vector<std::vector<Container>> &ship, std::unordered_set<std::pair<int,int>,hashFunctionPair> &myUOset )
+void updateQueue(std::priority_queue<Node, std::vector<Node>, myComparator>& pq, Node currNode, int x2, int y2, std::vector<std::vector<Container>> &ship, std::unordered_set<std::pair<int,int>,hashFunctionPair> &myUOset )
 {
     //time to explore the different nodes
     
     //std::vector<std::vector<Container>> ship = currNode->currShip;
-    int x = currNode->currX;
-    int y = currNode->currY;
+    int x = currNode.currX;
+    int y = currNode.currY;
     //x, y to move down
     //oops x and y axis flipped
+    int created = 0;
     
     if(x != 0)
     {
         std::pair<int, int>myPair = std::make_pair(x-1,y);
         if((ship[(x - 1)][y].isEmpty && myUOset.find(myPair) == myUOset.end()) || ((x-1) == x2 && y == y2))
         {    
-            Node* leftNode = new Node();
-            leftNode->prev = currNode;
-            leftNode->currX = x-1;
-            leftNode->currY = y;  
-            leftNode->depth = currNode->depth+1;
-            leftNode->cost = currNode->depth  + 1+ mannhatanDistancePath((x - 1), y, x2, y2);
+            Node leftNode;
+            created++;
+            //leftNode->prev = currNode;
+            leftNode.currX = x-1;
+            leftNode.currY = y;  
+            leftNode.depth = currNode.depth+1;
+            leftNode.cost = currNode.depth  + 1+ mannhatanDistancePath((x - 1), y, x2, y2);
             //std::cout<< myPair.first << ", " << myPair.second << "\n";            
             myUOset.insert(myPair);
             pq.push(leftNode);
@@ -498,12 +601,13 @@ void updateQueue(std::priority_queue<Node*, std::vector<Node*>, myComparator>& p
         std::pair<int, int>myPair = std::make_pair(x+1,y);
         if((ship[(x + 1)][y].isEmpty && myUOset.find(myPair) == myUOset.end())  || ((x+1) == x2 && y == y2))
         {
-            Node* rightNode = new Node();
-            rightNode->prev = currNode;
-            rightNode->currX = x+1; 
-            rightNode->currY = y;
-            rightNode->depth = currNode->depth+1;
-            rightNode->cost = currNode->depth  + 1+ mannhatanDistancePath((x + 1), y, x2, y2);
+            Node rightNode;
+            created++;
+            //rightNode->prev = currNode;
+            rightNode.currX = x+1; 
+            rightNode.currY = y;
+            rightNode.depth = currNode.depth+1;
+            rightNode.cost = currNode.depth  + 1+ mannhatanDistancePath((x + 1), y, x2, y2);
             //std::cout<< myPair.first << ", " << myPair.second << "\n";  
             myUOset.insert(myPair);
             pq.push(rightNode);
@@ -515,12 +619,13 @@ void updateQueue(std::priority_queue<Node*, std::vector<Node*>, myComparator>& p
         std::pair<int, int>myPair = std::make_pair(x,y-1);
         if((ship[x][y-1].isEmpty && myUOset.find(myPair) == myUOset.end() ) || (x == x2 && (y-1) == y2))
         {
-            Node* downNode = new Node();
-            downNode->prev = currNode;
-            downNode->currX = x;
-            downNode->currY = y-1; 
-            downNode->depth = currNode->depth+1;
-            downNode->cost = currNode->depth + 1 + mannhatanDistancePath(x, (y-1), x2, y2);
+            Node downNode;
+            created++;
+            //downNode->prev = currNode;
+            downNode.currX = x;
+            downNode.currY = y-1; 
+            downNode.depth = currNode.depth+1;
+            downNode.cost = currNode.depth + 1 + mannhatanDistancePath(x, (y-1), x2, y2);
             //std::cout<< myPair.first << ", " << myPair.second << "\n";  
             myUOset.insert(myPair);
             pq.push(downNode);
@@ -532,28 +637,33 @@ void updateQueue(std::priority_queue<Node*, std::vector<Node*>, myComparator>& p
         std::pair<int, int>myPair = std::make_pair(x,y+1);
         if((ship[x][y+1].isEmpty && myUOset.find(myPair) == myUOset.end()) || (x == x2 && (y+1) == y2))
         {
-            Node* upNode = new Node();
-            upNode->prev = currNode;
-            upNode->currX = x;
-            upNode->currY = y+1; 
-            upNode->depth = currNode->depth+1;
-            upNode->cost = currNode->depth + 1 + mannhatanDistancePath(x, (y+1), x2, y2);
+            Node upNode;
+            created++;
+            //upNode->prev = currNode;
+            upNode.currX = x;
+            upNode.currY = y+1; 
+            upNode.depth = currNode.depth+1;
+            upNode.cost = currNode.depth + 1 + mannhatanDistancePath(x, (y+1), x2, y2);
             //std::cout<< myPair.first << ", " << myPair.second << "\n";  
             myUOset.insert(myPair);
             pq.push(upNode);
         }
     }
+    //std::cout << "Created = " << created << "\n";
 
 
 }
 
 void printPath(Node * currNode)
 {
-    while(currNode != NULL)
+
+    /*while(currNode != NULL)
     {
         std::cout << currNode->currX << ", " << currNode->currY <<" With a cost of " << currNode->cost << "\n";
         currNode = currNode->prev;
     }
+    */
+   std::cout  << "UNDER CONSTRUCTION PRINTPATH\n";  
 }
 
 
@@ -624,6 +734,63 @@ void swapContainers( std::vector<std::vector<Container>>&ship, int x1, int y1, i
 
 int isBalanced(std::vector<std::vector<Container>>& ship, std::vector<int>left, std::vector<int>right)
 {
+
+    int leftSum = 0;
+    int rightSum = 0;
+    std::vector<int>leftShip;
+    std::vector<int>rightShip;
+    for( int i = 9; i >= 0; i--)
+    {
+        for (int j = 0; j < 12; j++)
+        {
+           if(ship[i][j].isEmpty || !ship[i][j].accessable)
+           {
+               continue;
+           }
+           if(j <= 5)
+           {
+               leftShip.push_back(ship[i][j].weight);
+               leftSum += ship[i][j].weight;
+               //std::cout << "left ship " << ship[i][j].weight << " "<< i << " , " <<  j << "\n";
+           }
+           else
+           {
+               rightShip.push_back(ship[i][j].weight);
+               rightSum += ship[i][j].weight;
+               //std::cout << "right ship " << ship[i][j].weight << " "<< i << " , " <<  j << "\n";
+           }
+            
+        }
+    }
+
+    int totalSum = rightSum+leftSum;
+    
+    double diff = abs(double(rightSum) - leftSum);
+
+    //std::cout << "diff = " << diff << "\n";
+    double percent = 15;
+    if(rightSum >= leftSum)
+    {
+         percent = ((diff/double(rightSum)) * 100);
+    }
+    else
+    {
+         percent = ((diff/double(leftSum)) * 100);
+    }
+    //double percent = ((diff/double(totalSum)) * 100);
+    //std::cout << "PERCENT = " << percent << "\n";
+    if(percent <= 10)
+    {
+        return 0;
+    }
+    else
+    {
+        
+        //return (int(diff)%5)+1;
+        return 1;
+    }
+
+    /*
     std::vector<int>leftShip;
     std::vector<int>rightShip;
     for( int i = 9; i >= 0; i--)
@@ -653,7 +820,7 @@ int isBalanced(std::vector<std::vector<Container>>& ship, std::vector<int>left, 
         std::cout << "FAILED HERE \n";
         //return false;
     }
-    */
+    
 
     //std::sort(leftShip.begin(), leftShip.end());
     //std::sort(rightShip.begin(), rightShip.end());
@@ -675,6 +842,7 @@ int isBalanced(std::vector<std::vector<Container>>& ship, std::vector<int>left, 
             wrong++;
         }
         found = false;
+        
         
     }
     bool startRight = false;
@@ -703,11 +871,11 @@ int isBalanced(std::vector<std::vector<Container>>& ship, std::vector<int>left, 
     {
         wrong += leftShip.size() + left.size();
     }
-
+    */
     
     //std::cout << "FAILED HERE \n";
 
-    return wrong;
+    return 1;
 
 }
 
@@ -735,80 +903,93 @@ void printInstructions(Node * currNode)
         myVec.push_back(currNode->instructions);
         //std::cout << currNode->instructions << "\n";
         //printShip(currNode->currShip);
-        currNode = currNode->prev;
+        //currNode = currNode->prev;
     }
-    for(int i = myVec.size(); i >= 0; i--)
+    //std::cout << myVec.size() << " her is size\n"; 
+    for(int i = myVec.size()-1; i >= 0; i--)
     {
+        //std::cout << i << " this is iher is size\n"; 
         std::cout << myVec[i];
     }
-    
 }
-void updateQueueBalance(std::priority_queue<Node*, std::vector<Node*>, myComparator>& pqBalance, Node * currNode, std::vector<int>&left, std::vector<int>&right, std::unordered_set<std::string>& myUOSetBalance)
+void updateQueueBalance(std::priority_queue<Node, std::vector<Node>, myComparator>& pqBalance, Node  currNode, std::vector<int>&left, std::vector<int>&right, std::unordered_set<std::string>& myUOSetBalance)
 {
     //std::cout << "GETTING CONTAINERS\n";
-    std::vector<std::vector<Container>> ship = currNode->currShip;
+    std::vector<std::vector<Container>> ship = currNode.currShip;
     std::vector<std::pair<int,int>>containerToAccess =  findContianersToMove(ship);
-    /*for(int i = 0; i < containerToAccess.size(); i++)
-    {
-        std::pair<int,int>currPair = containerToAccess[i];
-        //std::cout<< currPair.first << ", " << currPair.second << "\n";
-
-    }
-    */
     std::vector<std::pair<int,int>>openSpacesToAccess =  findOpenPlaces(ship);
-    /*std::cout << "GETTING SPACES\n";
-    for(int i = 0; i < openSpacesToAccess.size(); i++)
+
+    int craneX = currNode.craneX;
+    int craneY = currNode.craneY;
+    int nodesAdded = 0;
+    if(currNode.emptyCrane == true)
     {
-        std::pair<int,int>currPair = openSpacesToAccess[i];
-        //std::cout<< currPair.first << ", " << currPair.second << "\n";
+        for( int i = 0; i < containerToAccess.size(); i++)
+        {
+            std::pair<int,int>currContianerPair = containerToAccess[i];
+            //COST TO GET TO THE CONTAINER
+            int costToGetToContainer = findPath(craneX, craneY, currContianerPair.first, currContianerPair.second, ship);
+            Node newNode;
+            newNode.instructions = currNode.instructions + "Move from Crane (" + std::to_string(craneX) + ", " +  std::to_string(craneY)  + ") to (" +  std::to_string(currContianerPair.first) + " , " 
+                +  std::to_string(currContianerPair.second)+ ") \n";
+            newNode.currShip = ship;
+            int balance = isBalanced(newNode.currShip,left,right);
+            newNode.emptyCrane = false;
+            newNode.craneX = currContianerPair.first;
+            newNode.craneY = currContianerPair.second;
+            newNode.depth = currNode.depth + costToGetToContainer;
+            newNode.cost =currNode.depth + 1+ balance + costToGetToContainer;
+            pqBalance.push(newNode);
+            nodesAdded++;
+        }
 
     }
-    std::cout << "FINDING WHERE TO PUT\n";
-    */ 
-    //CRANE STARTS IN 8, 0
-    int craneX = currNode->craneX;
-    int craneY = currNode->craneY;
-    for(int i = 0; i < containerToAccess.size(); i++)
+    else
     {
-        std::pair<int,int>currContianerPair = containerToAccess[i];
-        //COST TO GET TO THE CONTAINER
-        int costToGetToContainer = findPath(craneX, craneY, currContianerPair.first, currContianerPair.second, ship);
-        //std::cout << "COST TO GET TO CONATINER : " << costToGetToContainer << "\n";
         for(int j = 0; j < openSpacesToAccess.size(); j++)
         {
+            
             std::pair<int,int>currEmptyPair = openSpacesToAccess[j];
             //Get cost of crane to this container 
-            if (currContianerPair.second != currEmptyPair.second)
+            if (craneY != currEmptyPair.second)
             {
-                int cost = costToGetToContainer + findPath(currContianerPair.first, currContianerPair.second, currEmptyPair.first, currEmptyPair.second, ship);
-                
-                Node* newNode = new Node();
-                newNode->instructions = "Move from Crane (" + std::to_string(craneX) + ", " +  std::to_string(craneY)  + ") to (" +  std::to_string(currContianerPair.first) + " , " 
-                +  std::to_string(currContianerPair.second)+ ") \nMove ("+  std::to_string(currContianerPair.first) + " , "+  std::to_string(currContianerPair.second)+ ") to ("
-                 +  std::to_string(currEmptyPair.first) + " , " +  std::to_string(currEmptyPair.second) + ") \n weight = " + std::to_string(ship[currContianerPair.first][currContianerPair.second].weight) + "cost = "  + std::to_string(cost) + "\n\n";
-                newNode->prev = currNode;
+                //std::cout << findPath(currContianerPair.first, currContianerPair.second, currEmptyPair.first, currEmptyPair.second, ship) << "\n";
+                int cost = findPath(craneX, craneY, currEmptyPair.first, currEmptyPair.second, ship);
+                //std::cout << "FINDING WHERE TO PUT\n";
+                Node newNode;
+                //std::cout << "FINDING WHERE TO PUT\n";
+                newNode.instructions = currNode.instructions + "Move ("+  std::to_string(craneX) + " , "+  std::to_string(craneY)+ ") to ("
+                 +  std::to_string(currEmptyPair.first) + " , " +  std::to_string(currEmptyPair.second) + ") \n weight = " + std::to_string(ship[craneX][craneY].weight) + "cost = "  + std::to_string(cost) + "\n\n";
+                //newNode->prev = currNode;
                 //leftNode->currX = x;
                 //leftNode->currY = y;  
-                newNode->currShip = ship;
-                swapContainers(newNode->currShip,currContianerPair.first, currContianerPair.second, currEmptyPair.first,currEmptyPair.second);
-                std::string tempString = stringify(newNode->currShip);
+                //std::cout << "COST  : " << cost << "\n";
+                newNode.currShip = ship;
+                swapContainers(newNode.currShip,craneX, craneY, currEmptyPair.first,currEmptyPair.second);
+                std::string tempString = stringify(newNode.currShip);
                 if (myUOSetBalance.find(tempString)  == myUOSetBalance.end() )
                 {
-                    int balance = isBalanced(newNode->currShip,left,right);
+                    int balance = isBalanced(newNode.currShip,left,right);
                     if(balance == 0)
                     {
                         //std::cout << "RIGHT HEREEEE\n";
                         //printShip(newNode->currShip);
                     }
-                    newNode->craneX = currEmptyPair.first;
-                    newNode->craneY = currEmptyPair.second;
-                    newNode->balance = balance;
-                    newNode->depth = currNode->depth + cost;
-                    newNode->cost = currNode->depth + 1+ balance + cost;
+                    newNode.craneX = currEmptyPair.first;
+                    newNode.craneY = currEmptyPair.second;
+                    newNode.balance = balance;
+                    newNode.emptyCrane = true;
+                    //std::cout << "NEW NODE balance  : " << newNode.balance << "\n";
+                    newNode.depth = currNode.depth + cost;
+                    //std::cout << "NEW NODE depth  : " << newNode.depth << "\n";
+                    newNode.cost = currNode.depth + 1+ balance + cost;
                     //std::cout<< myPair.first << ", " << myPair.second << "\n";            
                     myUOSetBalance.insert(tempString);
+                    //std::cout << "NEW NODE COST  : " << newNode.cost << "\n";
                     pqBalance.push(newNode);
+                    nodesAdded++;
                 }
+                
                 /*
                 newNode->craneX = currEmptyPair.first;
                 newNode->craneY = currEmptyPair.second;
@@ -827,9 +1008,83 @@ void updateQueueBalance(std::priority_queue<Node*, std::vector<Node*>, myCompara
                 //update the cost of the node
                 //keep the location of the crane             
             }
+        }
+    }
+    /*
+    for(int i = 0; i < containerToAccess.size(); i++)
+    {
+
+        std::pair<int,int>currContianerPair = containerToAccess[i];
+        //COST TO GET TO THE CONTAINER
+        int costToGetToContainer = findPath(craneX, craneY, currContianerPair.first, currContianerPair.second, ship);
+        
+        
+        //std::cout << "COST TO GET TO CONATINER : " << costToGetToContainer << "\n";
+        for(int j = 0; j < openSpacesToAccess.size(); j++)
+        {
+            std::pair<int,int>currEmptyPair = openSpacesToAccess[j];
+            //Get cost of crane to this container 
+            if (currContianerPair.second != currEmptyPair.second)
+            {
+                //std::cout << findPath(currContianerPair.first, currContianerPair.second, currEmptyPair.first, currEmptyPair.second, ship) << "\n";
+                int cost = costToGetToContainer + findPath(currContianerPair.first, currContianerPair.second, currEmptyPair.first, currEmptyPair.second, ship);
+                //std::cout << "FINDING WHERE TO PUT\n";
+                Node newNode;
+                //std::cout << "FINDING WHERE TO PUT\n";
+                newNode.instructions = "Move from Crane (" + std::to_string(craneX) + ", " +  std::to_string(craneY)  + ") to (" +  std::to_string(currContianerPair.first) + " , " 
+                +  std::to_string(currContianerPair.second)+ ") \nMove ("+  std::to_string(currContianerPair.first) + " , "+  std::to_string(currContianerPair.second)+ ") to ("
+                 +  std::to_string(currEmptyPair.first) + " , " +  std::to_string(currEmptyPair.second) + ") \n weight = " + std::to_string(ship[currContianerPair.first][currContianerPair.second].weight) + "cost = "  + std::to_string(cost) + "\n\n";
+                //newNode->prev = currNode;
+                //leftNode->currX = x;
+                //leftNode->currY = y;  
+                //std::cout << "COST  : " << cost << "\n";
+                newNode.currShip = ship;
+                swapContainers(newNode.currShip,currContianerPair.first, currContianerPair.second, currEmptyPair.first,currEmptyPair.second);
+                std::string tempString = stringify(newNode.currShip);
+                if (myUOSetBalance.find(tempString)  == myUOSetBalance.end() )
+                {
+                    int balance = isBalanced(newNode.currShip,left,right);
+                    if(balance == 0)
+                    {
+                        //std::cout << "RIGHT HEREEEE\n";
+                        //printShip(newNode->currShip);
+                    }
+                    newNode.craneX = currEmptyPair.first;
+                    newNode.craneY = currEmptyPair.second;
+                    newNode.balance = balance;
+                    //std::cout << "NEW NODE balance  : " << newNode.balance << "\n";
+                    newNode.depth = currNode.depth + cost;
+                    //std::cout << "NEW NODE depth  : " << newNode.depth << "\n";
+                    newNode.cost = currNode.depth + 1+ balance + cost;
+                    //std::cout<< myPair.first << ", " << myPair.second << "\n";            
+                    myUOSetBalance.insert(tempString);
+                    //std::cout << "NEW NODE COST  : " << newNode.cost << "\n";
+                    pqBalance.push(newNode);
+                    nodesAdded++;
+                }
+                
+                
+                newNode->craneX = currEmptyPair.first;
+                newNode->craneY = currEmptyPair.second;
+                newNode->balance = balance;
+                newNode->depth = currNode->depth+1;
+                newNode->cost = currNode->depth + 1+ balance;
+                //std::cout<< myPair.first << ", " << myPair.second << "\n";            
+                //myUOset.insert(myPair);
+                pqBalance.push(newNode);
+                
+                //std::cout << "pqBalance.size() = " << pqBalance.size() <<  "\n";
+
+                //std::cout<<"COST FROM " <<  currContianerPair.first << ", " << currContianerPair.second << " TO " << currEmptyPair.first << ", " << currEmptyPair.second << " is " << cost << "\n";
+                
+                //Make a node with the changes in it?
+                //update the cost of the node
+                //keep the location of the crane             
+            }
 
         }   
-    }
+    }*/
+    //std::cout << "NODES ADDED = "<< nodesAdded << "\n";
 
     
     

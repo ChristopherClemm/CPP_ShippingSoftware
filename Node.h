@@ -11,7 +11,7 @@ class Node{
     public:
         int cost;
         std::vector<std::vector<Container>> currShip;
-        Node * prev;
+        //Node * prev;
         int man;
         int currX;
         int currY;
@@ -19,6 +19,7 @@ class Node{
         int craneX;
         int craneY;
         int balance = 100;
+        bool emptyCrane;
         std::string instructions;
 
         //std::vector<int> vec;
