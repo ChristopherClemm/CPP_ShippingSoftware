@@ -21,6 +21,8 @@ class Node{
         int balance = 100;
         bool emptyCrane;
         std::string instructions;
+        std::string rawInsructions;
+        int done; 
 
         //std::vector<int> vec;
         //Node(std::vector<int>& ship);

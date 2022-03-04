@@ -15,7 +15,7 @@ class Container{
         std::string stringWeight;
         bool accessable;
         bool isContanier;
-        bool toBeRemoved; 
+        bool toBeRemoved = false; 
         bool isEmpty;
 
 };
